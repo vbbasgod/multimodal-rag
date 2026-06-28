@@ -4,17 +4,17 @@ Production-grade RAG system with multimodal support, RAGAS evaluation, and Kuber
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| LLM | GPT-4o (OpenAI) |
-| Embeddings | text-embedding-3-small |
-| Vector DB | ChromaDB |
-| Cache | Redis |
-| Backend | FastAPI + Python 3.11 |
-| Frontend | React 18 + Vite |
-| Evaluation | RAGAS (Faithfulness, Relevancy, Precision, Recall) |
-| Container | Docker (multi-stage builds) |
-| Orchestration | Kubernetes + HPA |
+| Layer         | Technology                                         |
+| ------------- | -------------------------------------------------- |
+| LLM           | GPT-4o (OpenAI)                                    |
+| Embeddings    | text-embedding-3-small                             |
+| Vector DB     | ChromaDB                                           |
+| Cache         | Redis                                              |
+| Backend       | FastAPI + Python 3.11                              |
+| Frontend      | React 18 + Vite                                    |
+| Evaluation    | RAGAS (Faithfulness, Relevancy, Precision, Recall) |
+| Container     | Docker (multi-stage builds)                        |
+| Orchestration | Kubernetes + HPA                                   |
 
 ## Architecture
 
@@ -145,23 +145,23 @@ kubectl scale deployment rag-backend --replicas=4 -n rag-system
 
 ## Evaluation Metrics (RAGAS)
 
-| Metric | Description | Range |
-|---|---|---|
-| **Faithfulness** | Are claims grounded in context? | 0–1 |
-| **Answer Relevancy** | Does the answer address the question? | 0–1 |
-| **Context Precision** | Are retrieved docs relevant? | 0–1 |
-| **Context Recall** | Does context cover the answer? | 0–1 |
-| **Overall Score** | Weighted average | 0–1 |
+| Metric                | Description                           | Range |
+| --------------------- | ------------------------------------- | ----- |
+| **Faithfulness**      | Are claims grounded in context?       | 0–1   |
+| **Answer Relevancy**  | Does the answer address the question? | 0–1   |
+| **Context Precision** | Are retrieved docs relevant?          | 0–1   |
+| **Context Recall**    | Does context cover the answer?        | 0–1   |
+| **Overall Score**     | Weighted average                      | 0–1   |
 
 Grades: A (≥85%) · B (≥70%) · C (≥55%) · D (<55%)
 
 ## Supported Document Types
 
-| Type | Processing |
-|---|---|
-| PDF | Text extraction (PyMuPDF) + image description (GPT-4o Vision) |
-| Image (JPG/PNG/WebP) | OCR (Tesseract) + visual description (GPT-4o Vision) |
-| Plain Text | Chunked and embedded directly |
+| Type                 | Processing                                                    |
+| -------------------- | ------------------------------------------------------------- |
+| PDF                  | Text extraction (PyMuPDF) + image description (GPT-4o Vision) |
+| Image (JPG/PNG/WebP) | OCR (Tesseract) + visual description (GPT-4o Vision)          |
+| Plain Text           | Chunked and embedded directly                                 |
 
 ## Retrieval Strategy
 
@@ -194,3 +194,7 @@ See `.env.example` for full reference.
 - **Optimized retrieval**: MMR re-ranking + Redis embedding cache
 - **Zero-downtime deploys**: Rolling update strategy with startup/liveness/readiness probes
 - **Multi-stage Docker**: minimized image sizes (~200MB backend, ~50MB frontend)
+
+## Architecture
+
+![Architecture](docs/images/architecture.svg)

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Environment
+.env
+!.env.example
+
+# Docker
+*.log
+
+# VS Code
+# (keep .vscode/ — it has shared settings)
+.vscode/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (runtime data)
+backend/uploads/
+
+# ChromaDB local data
+chroma_data/

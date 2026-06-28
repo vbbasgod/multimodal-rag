@@ -1,0 +1,75 @@
+{
+  // ── Python ──────────────────────────────────────────────────
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "python.analysis.extraPaths": ["${workspaceFolder}/backend"],
+  "python.analysis.typeCheckingMode": "basic",
+
+  // ── JavaScript / React ───────────────────────────────────────
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ── YAML (K8s manifests) ──────────────────────────────────────
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.formatOnSave": true
+  },
+  "yaml.schemas": {
+    "kubernetes": [
+      "k8s/*.yaml"
+    ]
+  },
+
+  // ── Editor ───────────────────────────────────────────────────
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.rulers": [88],
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.formatOnSave": true,
+
+  // ── Files ────────────────────────────────────────────────────
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/node_modules": true,
+    "**/.venv": false,
+    "**/dist": true,
+    "**/.pytest_cache": true,
+    "**/*.egg-info": true
+  },
+  "files.associations": {
+    "*.env*": "dotenv",
+    "Dockerfile*": "dockerfile"
+  },
+
+  // ── Search ───────────────────────────────────────────────────
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": false,
+    "**/dist": true,
+    "**/__pycache__": true
+  },
+
+  // ── Terminal ─────────────────────────────────────────────────
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "python.terminal.useEnvFile": true,
+  "python.envFile": "${workspaceFolder}/backend/.env",
+
+  // ── Docker ───────────────────────────────────────────────────
+  "docker.defaultRegistryPath": "your-dockerhub-user"
+}

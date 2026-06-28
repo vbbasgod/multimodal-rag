@@ -1,0 +1,40 @@
+# ── Ingress: nginx-ingress controller ────────────────────────
+# Requires: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.0/deploy/static/provider/cloud/deploy.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rag-ingress
+  namespace: rag-system
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    # For HTTPS: cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: rag.yourdomain.com   # Replace with your domain or use IP
+      http:
+        paths:
+          # Frontend (root)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rag-frontend-service
+                port:
+                  number: 80
+          # Backend API
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: rag-backend-service
+                port:
+                  number: 8000
+  # TLS (uncomment when you have cert-manager set up):
+  # tls:
+  #   - hosts:
+  #       - rag.yourdomain.com
+  #     secretName: rag-tls-secret

@@ -1,0 +1,172 @@
+# ── Uploads PVC ──────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-pvc
+  namespace: rag-system
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# ── Backend Deployment ────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-backend
+  namespace: rag-system
+  labels:
+    app: rag-backend
+    version: "1.0.0"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rag-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: rag-backend
+        version: "1.0.0"
+    spec:
+      containers:
+        - name: backend
+          # Replace with your Docker registry image
+          image: your-registry/multimodal-rag-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            # Secret
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: OPENAI_API_KEY
+            # ConfigMap
+            - name: OPENAI_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: OPENAI_MODEL
+            - name: EMBEDDING_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: EMBEDDING_MODEL
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: CHROMA_PORT
+            - name: CHROMA_COLLECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: CHROMA_COLLECTION
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: REDIS_URL
+            - name: RAGAS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: RAGAS_ENABLED
+            - name: TOP_K_RETRIEVAL
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: TOP_K_RETRIEVAL
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1.5Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 5
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc
+
+---
+# ── Backend Service ───────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-backend-service
+  namespace: rag-system
+spec:
+  selector:
+    app: rag-backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+
+---
+# ── HPA: Auto-scale backend ───────────────────────────────────
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rag-backend-hpa
+  namespace: rag-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rag-backend
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
